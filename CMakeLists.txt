@@ -18,7 +18,7 @@ option (WITH_LIBCOAP "Enable libcoap CoAP support)" OFF)
 option (WITH_ERBIUM "Enable Erbium CoAP support)" ON)
 option (WITH_GNUTLS "Enable GnuTLS DTLS support" OFF)
 option (WITH_CYASSL "Enable CyaSSL DTLS support" OFF)
-option (WITH_TINYDTLS "Enable TinyDTLS DTLS support" OFF)
+option (WITH_TINYDTLS "Enable TinyDTLS DTLS support" ON)
 option (WITH_MBEDTLS "Enable mbedTLS DTLS support" OFF)
 option (WITH_SYSTEMD "Install systemd service files" OFF)
 
@@ -39,9 +39,9 @@ endif ()
 
 
 # build tests, but disable running by default
-option (BUILD_TESTS "Build tests" ON)
+option (BUILD_TESTS "Build tests" OFF)
 option (RUN_TESTS "Enable tests" OFF)
-option (WITH_JSON "Enable JSON support" OFF)
+option (WITH_JSON "Enable JSON support" ON)
 # cmdline: cmake -DBUILD_TESTS=ON -DRUN_TESTS=OFF ..
 
 # build examples
