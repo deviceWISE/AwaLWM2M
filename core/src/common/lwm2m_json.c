@@ -227,7 +227,7 @@ static int JsonEncodeFloat(char * buffer, int bufferLen, char * id, double value
 // Write a JSON encoded boolean to the buffer provided
 static int JsonEncodeBoolean(char * buffer, int bufferLen, char * id, bool value, bool last)
 {
-    sprintf(buffer, "{\"n\":\"%s\",\"bv\":\"%s\"}", id, value ? "true" : "false");
+    sprintf(buffer, "{\"n\":\"%s\",\"bv\":%s}", id, value ? "true" : "false");
     if (!last)
     {
         strcat(buffer,",\n");
@@ -242,7 +242,7 @@ static int JsonEncodeBoolean(char * buffer, int bufferLen, char * id, bool value
 // Write a JSON encoded object-link to the buffer provided
 static int JsonEncodeObjectLink(char * buffer, int bufferLen, char * id, AwaObjectID objectID, AwaObjectInstanceID objectInstanceID, bool last)
 {
-    sprintf(buffer, "{\"n\":\"%s\",\"sv\":\"%d:%d\"}", id, objectID, objectInstanceID);
+    sprintf(buffer, "{\"n\":\"%s\",\"ov\":\"%d:%d\"}", id, objectID, objectInstanceID);
     if (!last)
     {
         strcat(buffer,",\n");
