@@ -1518,6 +1518,39 @@ static int HandleCancelObserveRequest(void * ctxt, AddressType * addr, const cha
     return 0;
 }
 
+int FormatDiscoverPart(NotificationAttributes * attributes, char *buffer, int buffer_len) {
+	char tmp[256];
+
+	if(attributes->ResourceID!=-1) {
+		snprintf(tmp,256,"<%d/%d/%d>",attributes->ObjectID, attributes->ObjectInstanceID, attributes->ResourceID);
+	} else if(attributes->ObjectInstanceID!=-1) {
+		snprintf(tmp,256,"<%d/%d>",attributes->ObjectID, attributes->ObjectInstanceID);
+	} else {
+		snprintf(tmp,256,"<%d>",attributes->ObjectID);
+	}
+
+	if(attributes->Valid[AttributeTypeEnum_MinimumPeriod]!=0) {
+		sprintf(tmp+strlen(tmp),";pmin=%d",attributes->MinimumPeriod);
+	}
+	if(attributes->Valid[AttributeTypeEnum_MaximumPeriod]!=0) {
+		sprintf(tmp+strlen(tmp),";pmax=%d",attributes->MaximumPeriod);
+	}
+	if(attributes->Valid[AttributeTypeEnum_Step]!=0) {
+		sprintf(tmp+strlen(tmp),";st=%f",attributes->Step);
+	}
+	if(attributes->Valid[AttributeTypeEnum_GreaterThan]!=0) {
+		sprintf(tmp+strlen(tmp),";gt=%f",attributes->GreaterThan);
+	}
+	if(attributes->Valid[AttributeTypeEnum_LessThan]!=0) {
+		sprintf(tmp+strlen(tmp),";lt=%f",attributes->LessThan);
+	}
+	if(strlen(buffer)!=0) {
+		strncat(buffer,",",buffer_len);
+	}
+	strncat(buffer,tmp,buffer_len);
+	return 0;
+}
+
 // Handler CoAP GET Requests, maps onto LWM2M READ and DISCOVER operations. Return 0 on success, non-zero on error.
 static int HandleGetRequest(void * ctxt, AddressType * addr, const char * path, const char * query, AwaContentType acceptContentType,
         const char * requestContent, size_t requestContentLen, AwaContentType * responseContentType, char * responseContent,
@@ -1539,7 +1572,41 @@ static int HandleGetRequest(void * ctxt, AddressType * addr, const char * path, 
 
     if (acceptContentType == AwaContentType_ApplicationLinkFormat)
     {
-        Lwm2m_Debug("Discover not supported\n");
+    	char *buffer;
+		buffer=malloc(1024);
+		memset(buffer,0,1024);
+        Lwm2m_Debug("Discover\n");
+        if(oir[2]!=-1) {
+        	//discovering a resource
+        	NotificationAttributes * attributes = AttributeStore_LookupNotificationAttributes(context->AttributeStore,
+        	            Lwm2mSecurity_GetShortServerID(context, addr), oir[0], oir[1], oir[2]);
+			if (attributes != NULL )
+			{
+				FormatDiscoverPart(attributes,buffer,1024);
+				strncpy(responseContent,buffer,*responseContentLen);
+				len=strlen(buffer);
+			}
+        } else if(oir[1]!=-1) {
+        	//discovering an instance
+        	struct ListHead * i;
+
+			ListForEach(i, &context->AttributeStore->ServerNotificationAttributes)
+			{
+				NotificationAttributes * attributes = ListEntry(i, NotificationAttributes, list);
+				if ((attributes != NULL) &&
+					(attributes->ShortServerID == Lwm2mSecurity_GetShortServerID(context, addr)) &&
+					(attributes->ObjectID == oir[0]) &&
+					(attributes->ObjectInstanceID == oir[1]))
+				{
+					FormatDiscoverPart(attributes,buffer,1024);
+				}
+			}
+			if(strlen(buffer)!=0) {
+				strncpy(responseContent,buffer,*responseContentLen);
+				len=strlen(buffer);
+			}
+        }
+        free(buffer);
     }
     else
     {
@@ -1699,11 +1766,11 @@ static int HandlePostRequest(void * ctxt, AddressType * addr, const char * path,
 }
 
 // PUT Write Attributes request
-//   2.04 Changed “Write Attributes” operation is completed successfully
+//   2.04 Changed "Write Attributes" operation is completed successfully
 //   4.00 Bad Request The format of attribute to be written is different
-//   4.04 Not Found URI of “Write Attributes” operation is not found
+//   4.04 Not Found URI of "Write Attributes" operation is not found
 //   4.01 Unauthorized Access Right Permission Denied
-//   4.05 Method Not Allowed Target is not allowed for Write Attributes operation
+//   4.05 Method Not Allowed Target is not allowed for "Write Attributes" operation
 static int HandleWriteAttributesRequest(void * ctxt, AddressType * addr, const char * path, const char * query, AwaContentType contentType,
         const char * requestContent, size_t requestContentLen, char * responseContent, size_t * responseContentLen, int * responseCode)
 {
@@ -1860,7 +1927,7 @@ static int HandleWriteAttributesRequest(void * ctxt, AddressType * addr, const c
             else if (temp.Valid[AttributeTypeEnum_GreaterThan] && temp.Valid[AttributeTypeEnum_LessThan]
                     && temp.Valid[AttributeTypeEnum_Step])
             {
-                // The following rules MUST be respected (“lt” value + 2*”stp” values < “gt” value)
+                // The following rules MUST be respected ("lt" value + 2*"st" values < "gt" value)
                 Lwm2m_Error("The difference between minimum and maximum threshold is less than twice the step attribute value\n");
                 *responseCode = AwaResult_BadRequest;
             }
@@ -2003,7 +2070,7 @@ static void PrepareObjectForReplace(Lwm2mContextType * context, ObjectIDType obj
 }
 
 // Handle CoAP PUT Requests, maps onto LWM2M Replace WRITE and WRITE ATTRIBUTES operations.
-// LWM2M Spec 5.4.3: Replace: replaces the Object Instance or the Resource(s) with the new value provided in the “Write” operation.
+// LWM2M Spec 5.4.3: Replace: replaces the Object Instance or the Resource(s) with the new value provided in the "Write" operation.
 // Return 0 on success, non-zero on error.
 static int HandlePutRequest(void * ctxt, AddressType * addr, const char * path, const char * query, AwaContentType contentType,
         const char * requestContent, size_t requestContentLen, char * responseContent, size_t * responseContentLen, int * responseCode)
