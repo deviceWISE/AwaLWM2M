@@ -69,6 +69,7 @@ void Lwm2mCore_SetServerUpdateRegistration(Lwm2mContextType * context, int serve
 void Lwm2mCore_UpdateAllServers(Lwm2mContextType * context, Lwm2mRegistrationState state);
 
 void Lwm2mCore_DeregisterAllServers(Lwm2mContextType * context);
+void Lwm2mCore_DeregisterServer(Lwm2mContextType * context,int serverObjectInstanceID);
 
 void Lwm2mCore_DestroyServerList(Lwm2mContextType * context);
 
