@@ -39,7 +39,7 @@ static const AttributeCharacteristics AttributeCharacteristicsTable[] =
     {.Type = AttributeTypeEnum_MaximumPeriod,   .Name = "Maximum Period",  .CoRELinkParam = "pmax",    .ValueType = AwaResourceType_Integer},
     {.Type = AttributeTypeEnum_GreaterThan,     .Name = "Greater Than",    .CoRELinkParam = "gt",      .ValueType = AwaResourceType_Float},
     {.Type = AttributeTypeEnum_LessThan,        .Name = "Less Than",       .CoRELinkParam = "lt",      .ValueType = AwaResourceType_Float},
-    {.Type = AttributeTypeEnum_Step,            .Name = "Step",            .CoRELinkParam = "stp",     .ValueType = AwaResourceType_Float},
+    {.Type = AttributeTypeEnum_Step,            .Name = "Step",            .CoRELinkParam = "st",     .ValueType = AwaResourceType_Float},
     {.Type = AttributeTypeEnum_Cancel,          .Name = "Cancel",          .CoRELinkParam = "cancel",  .ValueType = AwaResourceType_None},
 };
 
