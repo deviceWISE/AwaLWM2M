@@ -107,9 +107,9 @@ static void GetQueryString(Lwm2mContextType * context, int shortServerID, char *
 }
 
 
-// Registration is performed when a LWM2M Client sends a “Register” operation to the LWM2M Server.
+// Registration is performed when a LWM2M Client sends a “Register� operation to the LWM2M Server.
 // After the LWM2M Device is turned on and the bootstrap procedure has been completed, the LWM2M Client
-// MUST perform a “Register” operation to each LWM2M Server that the LWM2M Client has a Server Object Instance.
+// MUST perform a “Register� operation to each LWM2M Server that the LWM2M Client has a Server Object Instance.
 static void SendRegisterRequest(Lwm2mContextType * context, Lwm2mServerType * server)
 {
     // POST, Uri-Path: "rd", Uri-Query: "ep={ClientName}&lt={LifeTime}&sms={msisdn}&lwm2m={version}&b={binding}"
@@ -135,7 +135,6 @@ static void SendRegisterRequest(Lwm2mContextType * context, Lwm2mServerType * se
         return;
     }
 
-
     GetQueryString(context, server->ShortServerID, uriQuery, sizeof(uriQuery));
     Lwm2mCore_GetObjectList(context, NULL, payload, sizeof(payload), true);
 
@@ -146,6 +145,7 @@ static void SendRegisterRequest(Lwm2mContextType * context, Lwm2mServerType * se
     Lwm2m_Debug("Register: POST %s\n", uri);
 
     coap_Reset(uri);
+    Lwm2m_SetSecurityCoapPskForShortServerID(context,server->ShortServerID);
 
     coap_PostRequest(server, uri, AwaContentType_ApplicationLinkFormat, payload, strlen(payload), HandleRegisterResponse);
     server->RegistrationState = Lwm2mRegistrationState_Registering;
@@ -175,8 +175,8 @@ static void HandleRegisterResponse(void * ctxt, AddressType * address, const cha
 
 
 // Periodically or based on certain events within the LWM2M Client or initiated by the LWM2M Server,
-// the LWM2M Client updates its registration information with a LWM2M Server by sending an “Update”
-// operation to the LWM2M Server. This “Update” operation MUST contain only the parameters listed in
+// the LWM2M Client updates its registration information with a LWM2M Server by sending an “Update�
+// operation to the LWM2M Server. This “Update� operation MUST contain only the parameters listed in
 // Table 5 which have changed compared to the last registration parameters sent to the LWM2M Server.
 static void SendRegistrationUpdate(Lwm2mContextType * context, Lwm2mServerType * server)
 {
@@ -234,7 +234,7 @@ static void HandleRegisterUpdateResponse(void * ctxt, AddressType * address, con
 }
 
 // When a LWM2M Client determines that it no longer requires to be available to a LWM2M Server
-// (e.g., LWM2M Device factory reset), the LWM2M Client SHOULD send a “De-register” operation to
+// (e.g., LWM2M Device factory reset), the LWM2M Client SHOULD send a “De-register� operation to
 // the LWM2M Server. Upon receiving this message, the LWM2M Server removes the registration information
 // from the LWM2M Server.
 static void Deregister(Lwm2mContextType * context, Lwm2mServerType * server)

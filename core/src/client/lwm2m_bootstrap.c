@@ -50,9 +50,9 @@ static void HandleBootstrapResponse(void * ctxt, AddressType* address, const cha
  * In client-initiated bootstrap, when the Bootstrap Server receives Request Bootstrap operation, the Bootstrap Server performs Write
  * and/or Delete operation. In server initiated bootstrap, the Bootstrap Server performs Write operation.
  * The Write or Delete operation targets to an Object Instance or a Resource. The Write and Delete operation can be sent multiple times.
- * Only in Bootstrap Interface, Delete operation MAY target to “/” URI to delete all the existing Object Instances except
+ * Only in Bootstrap Interface, Delete operation MAY target to â€œ/â€� URI to delete all the existing Object Instances except
  * LWM2M Bootstrap Server Account in the LWM2M Client for initializing before LWM2M Bootstrap Server sends Write operation(s)
- * to the LWM2M Client. Different from „Write“ operation in Device Management and Service Enablement interface, the LWM2M Client MUST write
+ * to the LWM2M Client. Different from â€žWriteâ€œ operation in Device Management and Service Enablement interface, the LWM2M Client MUST write
  * the value included in the payload regardless of an existence of the targeting Object Instance or Resource.
  */
 static void SendBootStrapRequest(Lwm2mContextType * context, int shortServerID)
@@ -72,6 +72,7 @@ static void SendBootStrapRequest(Lwm2mContextType * context, int shortServerID)
     Lwm2m_Info("Bootstrap with %s\n", uri);
 
     coap_Reset(uri);
+    Lwm2m_SetSecurityCoapPskForShortServerID(context,shortServerID);
 
     coap_PostRequest(context, uri, AwaContentType_None, NULL, 0, HandleBootstrapResponse);
 }
@@ -190,8 +191,8 @@ void Lwm2m_BootStrapInit(Lwm2mContextType * context)
  *    Client tries to obtain the Bootstrap Information by using Factory Bootstrap mode.
  * 3. If the LWM2M Client has any LWM2M Server Object Instances from the previous steps, the LWM2M
  *    Client tries to register to the LWM2M Server(s) configured in the LWM2M Server Object Instance(s).
- * 4. If LWM2M Client fails to register to all the LWM2M Servers or the Client doesn’t have any
- *    LWM2M Server Object Instances, and the LWM2M Client hasn’t received a Server Initiated Bootstrap
+ * 4. If LWM2M Client fails to register to all the LWM2M Servers or the Client doesnâ€™t have any
+ *    LWM2M Server Object Instances, and the LWM2M Client hasnâ€™t received a Server Initiated Bootstrap
  *    within the ClientHoldOffTime, the LWM2M Client performs the Client Initiated Bootstrap.
  */
 void Lwm2m_UpdateBootStrapState(Lwm2mContextType * context)

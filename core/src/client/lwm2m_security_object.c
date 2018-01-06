@@ -133,6 +133,16 @@ static LWM2MSecurityInfo * GetSecurityInfoForShortServerID(Lwm2mContextType * co
     return NULL;
 }
 
+void Lwm2m_SetSecurityCoapPskForShortServerID(Lwm2mContextType * context, int shortServerID) {
+	LWM2MSecurityInfo *secInfo = GetSecurityInfoForShortServerID(context,shortServerID);
+	if(secInfo==0) {
+		return;
+	}
+	if(strlen(secInfo->PublicKeyIdentity)>0) {
+		coap_SetPSK(secInfo->PublicKeyIdentity, secInfo->SecretKey, secInfo->SecretKeyLength);
+	}
+}
+
 static LWM2MSecurityInfo * AddSecurityInfo(Lwm2mContextType * context, ObjectInstanceIDType objectInstanceID)
 {
     LWM2MSecurityInfo * new = NULL;
@@ -220,7 +230,7 @@ static int Lwm2mSecurity_DeleteObjectInstance(Lwm2mContextType * context, Object
 static int Lwm2mSecurity_ObjectDeleteHandler(void * context, ObjectIDType objectID, ObjectInstanceIDType objectInstanceID, ResourceIDType resourceID, ResourceInstanceIDType resourceInstanceID)
 {
     (void)resourceInstanceID;
-    // 8.2.2 Delete operation MAY target to “/” URI to delete all the existing Object Instances except LWM2M
+    // 8.2.2 Delete operation MAY target to â€œ/â€� URI to delete all the existing Object Instances except LWM2M
     // Bootstrap Server Account in the LWM2M Client.
 
     if (objectID != LWM2M_SECURITY_OBJECT)
