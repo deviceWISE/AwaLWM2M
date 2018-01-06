@@ -10,7 +10,7 @@ erbium_src = er-coap.c \
 #  er-coap-observe-client.c
 
 
-CFLAGS += -DREST_MAX_CHUNK_SIZE=512 -DPOSIX -DUIP_CONF_BUFFER_SIZE=4096 -UWITH_JSON -Ucoap_rest_implementation
+CFLAGS += -DREST_MAX_CHUNK_SIZE=1024 -DPOSIX -DUIP_CONF_BUFFER_SIZE=4096 -UWITH_JSON -Ucoap_rest_implementation
 
 
 
